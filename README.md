@@ -2,7 +2,7 @@
 Classification of CMIP6 models with SLP fields
 This suite of scripts aims to classify SLP fields from the entire CMIP6 archive. The goal is to recognize a model from a daily map of SLP. The classification is performed with a convolutional neural network with 256 neurons. It uses tensorflow in R.
 
-This should be downloaded from: https://github.com/pascalyiou/CMIP6class
+This should be downloaded from: https://github.com/pascalyiou/CMIP6-classification
 
 The codes have been developed by Pascal Yiou (LSCE, IPSL, U Paris Saclay). The codes are distributed "as is" under a CeCILL license:
 http://www.cecill.info/
@@ -26,6 +26,7 @@ How does it work? On spiritx (the IPSL computing cluster), first prepare the inp
 CMIP6-all_psl_file-prepare.sh
 This can take up to 48h on spiritx.
 
+Then install the right version of R: module load R/4.4.1 tensorflow/2.15.0
 Then do a classification with: CMIP6_tensorflow-classif_v0.R. This works better on hal.ipsl.fr (the GPU cluster at IPSL).
 
 This takes ~10mn. The script does 20 "random" classifications to test the stability of algorithm. By default, the program learns on ~20 years of data and verifies on the remaining years. Seasons have to be analyzed separately.
