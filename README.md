@@ -27,6 +27,6 @@ CMIP6-all_psl_file-prepare.sh
 This can take up to 48h on spiritx.
 
 Then install the right version of R: module load R/4.4.1 tensorflow/2.15.0
-Then do a classification with: CMIP6_tensorflow-classif_v0.R. This works better on hal.ipsl.fr (the GPU cluster at IPSL).
+Then do a classification with: CMIP6_tensorflow-classif_v0.R. This works better on hal.ipsl.fr (the GPU cluster at IPSL). The bash file CMIP6_classif-v0.sh launches 4 classifications (one by season).
 
 This takes ~10mn. The script does 20 "random" classifications to test the stability of algorithm. By default, the program learns on ~20 years of data and verifies on the remaining years. Seasons have to be analyzed separately.
