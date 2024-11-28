@@ -11,7 +11,7 @@
 ## C'est celle qui marche le mieux. NE PAS TOUCHER!
 ## Fonctionne sur la machine GPU hal de l'IPSL
 ## Se lance par:
-## R CMD BATCH "--args SEAS NMOD" ${HOME}/programmes/RStat/CMIP6class/CMIP6_tensorflow-classif_v0.R 
+## R CMD BATCH "--args SEAS NMOD" ${HOME}/programmes/RStat/CMIP6class/V0/CMIP6_tensorflow-classif_v0.R 
 
 SI=Sys.info()
 user=SI[["user"]]
@@ -53,6 +53,8 @@ if(length(args)>0){
     seas = "JJA" ## Saison pour le calcul
     nmod = 9 ## Nombre de modeles à prendre
 }
+
+nneurons=256
 
 ## Date set up
 ## Liste des saisons
@@ -112,6 +114,7 @@ l.mod.sel=c("BCC_BCC-ESM1","CAS_FGOALS-g3","CCCma_CanESM5",
                   "EC-Earth-Consortium_EC-Earth3",
  ##                 "HAMMOZ-Consortium_MPI-ESM-1-2-HAM",
                   "INM_INM-CM5-0","IPSL_IPSL-CM6A-LR","MIROC_MIROC6",
+            "MOHC_HadGEM3-GC31-LL",
                   "MOHC_UKESM1-0-LL","MPI-M_MPI-ESM1-2-LR","MRI_MRI-ESM2-0",
                   "NCAR_CESM2","NCC_NorCPM1","NIMS-KMA_KACE-1-0-G",
             "NUIST_NESM3")
@@ -188,10 +191,16 @@ veriMOD=I.mod[I.seas[itest]]
 ## Normalisation des données
 ## train_images <- train_images / 255
 ## test_images <- test_images / 255
+## Nom generique du modèle de NN
+nclass=nmod+1
+nname=paste("SLP_CMIP6_CNN-",nneurons,"-",nclass,"-model-",
+            seas,"_v0",sep="")
+setwd(paste("/home/",user,"/RESULTS",sep=""))
 
 ## Classification par de Monte Carlo
 l.OK=c()
 l.OK.test=c()
+score.acc=0
 for(i in 1:nsim){
 ## Definition du modèle de réseau de neuronnes
     nx=dim(trainSLP)[2]
@@ -202,7 +211,7 @@ for(i in 1:nsim){
 ## on prend une couche de 256 neuronnes
     model %>%
         layer_flatten(input_shape = c(nx, ny)) %>%
-        layer_dense(units = 256, activation = 'relu') %>%
+        layer_dense(units = nneurons, activation = 'relu') %>%
         layer_dense(units = nclass+1, activation = 'softmax')
 
 ## Compilation du modèle
@@ -217,7 +226,12 @@ for(i in 1:nsim){
 
     ## Score du modele
     score <- model %>% evaluate(veriSLP, veriMOD, verbose = 0)
-
+## Sauvegarder le modèle complet (architecture + poids) s'il est meilleur
+## que le précédent
+    if(score[["accuracy"]] > score.acc){
+        score.acc=score[["accuracy"]]
+        model %>% save_model(paste(nname,".keras",sep=""),overwrite=TRUE)
+    }
 
     ## Prediction sur l'ensemble de verification
     predictions <- model %>% predict(veriSLP)
@@ -243,7 +257,7 @@ save(file=paste(filout,".Rdat",sep=""),l.OK,l.names,l.mod.sel,seas,predictions)
 ## Figure de score avec boxplots
 pdf(paste(filout,".pdf",sep=""),width=8)
 i=1
-par(mar=c(8,4,1,1))
+par(mar=c(9,4,1,1))
 boxplot(l.OK,ylab="Prob. success",xlab="",
         axes=FALSE,ylim=c(0.0,1))
 axis(side=2)

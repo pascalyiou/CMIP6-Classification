@@ -1,8 +1,10 @@
 #!/bin/bash -l
 ## Lancement en BATCH de classifications de modeles par tensorflow
+## Fait une classification sur ERA5 et les NMOD premiers modèles par ordre
+## alphabetique. NMOD <= 17
 ## Pascal Yiou (LSCE), Nov. 2024
 ## Se lance sur HAL par:
-## sbatch ${HOME}/programmes/RStat/CMIP6class/CMIP6_classif-v0.sh NMOD 
+## sbatch ${HOME}/programmes/RStat/CMIP6class/V0/CMIP6_classif-v0.sh NMOD 
 ## ATTENTION: NE PLUS TOUCHER!
 
 # Instructions SBATCH always at the beginning of the script!
@@ -43,10 +45,10 @@ module load R/4.4.1 tensorflow/2.15.0
 
 NMOD=$1
 
-R CMD BATCH "--args JJA ${NMOD}" ${HOME}/programmes/RStat/CMIP6class/CMIP6_tensorflow-classif_v0.R
-R CMD BATCH "--args DJF ${NMOD}" ${HOME}/programmes/RStat/CMIP6class/CMIP6_tensorflow-classif_v0.R
-R CMD BATCH "--args MAM ${NMOD}" ${HOME}/programmes/RStat/CMIP6class/CMIP6_tensorflow-classif_v0.R
-R CMD BATCH "--args SON ${NMOD}" ${HOME}/programmes/RStat/CMIP6class/CMIP6_tensorflow-classif_v0.R
+R CMD BATCH "--args JJA ${NMOD}" ${HOME}/programmes/RStat/CMIP6class/V0/CMIP6_tensorflow-classif_v0.R
+R CMD BATCH "--args DJF ${NMOD}" ${HOME}/programmes/RStat/CMIP6class/V0/CMIP6_tensorflow-classif_v0.R
+R CMD BATCH "--args MAM ${NMOD}" ${HOME}/programmes/RStat/CMIP6class/V0/CMIP6_tensorflow-classif_v0.R
+R CMD BATCH "--args SON ${NMOD}" ${HOME}/programmes/RStat/CMIP6class/V0/CMIP6_tensorflow-classif_v0.R
 
 # slurm in environment variable SLURM_CPUS_PER_TASK
 export NUM_CPUS=$SLURM_CPUS_PER_TASK
